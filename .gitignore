@@ -1,0 +1,29 @@
+# Python 编译文件
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+
+# 打包输出
+dist/
+build/
+*.spec
+
+# 日志
+server.log
+
+# 自动保存的屏幕截图
+client_screens/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.bak

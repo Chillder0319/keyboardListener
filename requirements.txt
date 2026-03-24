@@ -1,0 +1,6 @@
+flask
+pynput
+requests
+pillow
+mss
+pyinstaller
